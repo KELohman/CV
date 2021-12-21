@@ -1,0 +1,247 @@
+---
+name: Karen Elizabeth Lohman
+#surname: Karen Elizabeth Lohman
+position: "Master's Student, Department of Fisheries, Wildlife, and Conservation Sciences"
+address: "Marine Mammal Institute: Hatfield Marine Science Center, Oregon State University"
+#www: "bryanjenks.dev"
+email: "karenelohman@gmail.com"
+phone: (208) 457 - 2845
+github: KELohman
+#orcid: 0000-0002-9604-3069
+date: "`r format(Sys.time(), '%B %Y')`"
+updated: yes
+headcolor: 414141
+aboutme: ""
+docname: CV
+output: vitae::awesomecv
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      warning = FALSE,
+                      message = FALSE)
+
+library(lubridate)
+require(xfun)
+packages <- c('vitae'     # The CV's LaTeX Template
+             ,'tibble'    # Data structure for tribbles
+             ,'magrittr'  # The Pipe %>%
+             ,'here'      # Relative File Paths
+             ,'readr'     # Data Loading
+             ,'glue'      # String Manipulation
+            )
+xfun::pkg_attach2(packages, message = FALSE)
+
+# library(tinytex)
+# library(scholar)
+library(tidyverse)
+#library(zoo)
+
+# library(readxl)
+
+#source(file = here("r","data.r"))
+```
+
+```{r get data, include=FALSE}
+## Education
+edu <- read_csv(here("data", "education.csv"))
+## Jobs
+jobs <- read_csv(here::here("data", "jobs.csv"))
+## Publications - change google id here
+# pubs <- scholar::get_publications("GqZm90IAAAAJ") %>% 
+#   dplyr::mutate(author = author %>% 
+#                   as.character %>% 
+#                   stringr::str_trim(),
+#                 journal = journal %>% 
+#                   replace(journal %in% "bioRxiv", "BioRxiv"), 
+#                 first_author = case_when(stringr::str_starts(author, "S Abbott") ~ TRUE,
+#                                          TRUE ~ FALSE),
+#                 preprint = case_when(journal %in% c("bioRxiv", "BioRxiv") ~ TRUE,
+#                                          TRUE ~ FALSE)) %>% 
+#   dplyr::arrange(desc(year))
+## Software
+#software <- read_csv(here::here("data", "software.csv")) %>% 
+#  arrange(desc(when)) 
+## Dashboards
+# dashboards <- read_csv(here::here("data", "dashboards.csv")) %>% 
+#   arrange(desc(when)) 
+## Teaching
+teaching <- read_csv(here::here("data", "teaching.csv")) %>% 
+  arrange(desc(when))
+## Presentations
+presentations <- read_csv(here::here("data", "presentations.csv")) %>% 
+  arrange(desc(when))
+## Invited speaker talks
+invited_speaker <- read_csv(here::here("data", "invited_speaker.csv")) 
+invited_speaker$when <- as.Date(invited_speaker$when, format = "%m/%d/%Y")
+
+## Training
+training <- read_csv(here::here("data", "training.csv")) %>% 
+  arrange(desc(when))
+## Funding
+funding <- read_csv(here::here("data", "funding.csv")) %>% 
+  arrange(desc(when))
+## Skills
+skills <- read_csv(here::here("data", "skills.csv")) %>% 
+  group_by(category) %>% 
+  mutate(skill = paste(skill, collapse = ", ")) %>% 
+  ungroup %>% 
+  unique
+## Service
+service <- read_csv(here::here("data", "service.csv"))
+```
+
+# Education 
+```{r}
+detailed_entries(edu,
+                 when = glue("{start_date}--{end_date}"),
+                 what = degree,
+                 where = loc,
+                 with = uni,
+                why = details)
+```
+
+# Work Experience
+
+```{r research}
+jobs %>%
+  detailed_entries(
+    what = role,
+    when = glue("{start_date}--{end_date}"),
+    with = company,
+    where = where,
+    why = details)
+```
+
+
+<!-- # Publications -->
+
+<!-- **First author** -->
+
+<!-- ```{r} -->
+<!-- pubs %>%  -->
+<!--   dplyr::filter(first_author, !preprint) %>%  -->
+<!--   detailed_entries( -->
+<!--     what = title, -->
+<!--     when = as.character(year), -->
+<!--     with = author, -->
+<!--     where = journal,  -->
+<!--     .protect = TRUE -->
+<!--   ) -->
+<!-- ``` -->
+
+<!-- **Non-first author** -->
+
+<!-- ```{r} -->
+<!-- pubs %>%  -->
+<!--   dplyr::filter(!first_author, !preprint) %>%  -->
+<!--   detailed_entries( -->
+<!--     what = title, -->
+<!--     when = as.character(year), -->
+<!--     with = author, -->
+<!--     where = journal, -->
+<!--     .protect = TRUE -->
+<!--   ) -->
+<!-- ``` -->
+<!-- *Updated programmatically each week. See [here](https://scholar.google.com/citations?user=GqZm90IAAAAJ&hl=en) for DOIs and citation details.* -->
+
+# Management Reports & Presentations
+```{r}
+
+presentations %>%
+  filter(managemnt == "yes") %>% 
+    brief_entries(glue::glue("<title> <with>. <type>. <where>.", .open = "<", .close = ">"), when, .protect = FALSE)
+
+```
+
+
+# Conference Presentations
+
+```{r}
+presentations %>%
+  filter(managemnt == "no") %>% 
+    brief_entries(glue::glue("<title> <with>. <type>. <where>.", .open = "<", .close = ">"), when, .protect = FALSE)
+
+
+#  brief_entries(glue::glue("\\textbf{<title>}: <details>", when, .protect = FALSE)
+                           
+  # detailed_entries(what = what,
+  #                  when = when,
+  #                  with = with,
+  #                  where = where,
+  #                  why = why,
+  #                  .protect = TRUE)
+
+# tribble(
+#   ~ when, ~ title, ~ details, ~ where, ~ url,
+#   "2020", "Forecasting with multiple seasonality", "Methods and techniques to multiple seasonal forecasting in R", "UK NHS", "https://slides.mitchelloharawild.com/nhs2020/",
+#  %>%
+#   
+```
+
+\newpage
+
+# Funding & Awards
+
+```{r}
+funding %>% 
+  brief_entries(
+    what = glue("{with}--{what}"),
+    when = when
+  )
+```
+
+# Teaching
+
+```{r}
+teaching %>% 
+  detailed_entries(what = what, where = when, with = with,  why = why)
+```
+
+# Selected Outreach & Invited Speaker Lectures
+
+```{r}
+invited_speaker %>%
+  detailed_entries(what = what,
+                   when = lubridate::year(when),
+                   with = with,
+                   where = where,
+                   why = why,
+                   .protect = TRUE)
+```
+
+# Outreach Activities
+
+```{r}
+service %>%
+  filter(type == "Outreach") %>% 
+  detailed_entries(where=when, with=with, why = details, what=thru
+    # what = glue("{with}--{details}"),
+    # when = when
+  )
+```
+
+# Department Service
+```{r}
+service %>%
+  filter(type == "Service") %>% 
+  detailed_entries(where=when, with=with, why = details, what = thru
+    # what = glue("{with}--{details}"),
+    # when = when
+  )
+```
+
+# Workshops & Short Courses Attended
+
+```{r}
+training %>% 
+  detailed_entries(what = what, with = with, when = when, where = where, why = why)
+```
+
+
+# Skills
+
+```{r}
+skills %>%
+  detailed_entries(what = skill, with = category)
+```
